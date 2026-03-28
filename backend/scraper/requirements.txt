@@ -1,0 +1,36 @@
+# Web Scraping Dependencies for CBIC Customs Data Collection
+
+# HTTP requests with retry logic
+requests>=2.31.0
+urllib3>=2.0.0
+
+# HTML parsing
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+
+# PDF processing
+pdfplumber>=0.10.0
+PyPDF2>=3.0.0
+
+# JavaScript-heavy sites (optional - for Indian Trade Portal)
+playwright>=1.40.0
+
+# Data handling
+pandas>=2.0.0
+
+# Date/time utilities
+python-dateutil>=2.8.0
+
+# Progress tracking (optional)
+tqdm>=4.66.0
+
+# For async operations (optional)
+aiohttp>=3.9.0
+
+# Database connectivity (adjust based on your database)
+# sqlalchemy>=2.0.0
+# psycopg2-binary>=2.9.0  # PostgreSQL
+# pymysql>=1.1.0  # MySQL
+
+# Environment variables
+python-dotenv>=1.0.0

@@ -1,0 +1,92 @@
+[
+  {
+    "cth_code": "84714110",
+    "description": "LAPTOPS",
+    "bcd_rate": "10%",
+    "unit": "NOS",
+    "chapter": "84",
+    "source": "icegate",
+    "scrape_timestamp": "2026-03-27T02:00:00"
+  },
+  {
+    "cth_code": "84714120",
+    "description": "PERSONAL COMPUTERS",
+    "bcd_rate": "10%",
+    "unit": "NOS",
+    "chapter": "84",
+    "source": "icegate",
+    "scrape_timestamp": "2026-03-27T02:00:00"
+  },
+  {
+    "cth_code": "84714910",
+    "description": "SERVERS",
+    "bcd_rate": "10%",
+    "unit": "NOS",
+    "chapter": "84",
+    "source": "icegate",
+    "scrape_timestamp": "2026-03-27T02:00:00"
+  },
+  {
+    "cth_code": "85171210",
+    "description": "MOBILE PHONES",
+    "bcd_rate": "15%",
+    "unit": "NOS",
+    "chapter": "85",
+    "source": "icegate",
+    "scrape_timestamp": "2026-03-27T02:00:00"
+  },
+  {
+    "cth_code": "85171290",
+    "description": "SMARTPHONES",
+    "bcd_rate": "15%",
+    "unit": "NOS",
+    "chapter": "85",
+    "source": "icegate",
+    "scrape_timestamp": "2026-03-27T02:00:00"
+  },
+  {
+    "cth_code": "90181110",
+    "description": "ELECTROCARDIOGRAPHS",
+    "bcd_rate": "7.5%",
+    "unit": "NOS",
+    "chapter": "90",
+    "source": "icegate",
+    "scrape_timestamp": "2026-03-27T02:00:00"
+  },
+  {
+    "cth_code": "90183110",
+    "description": "SYRINGES",
+    "bcd_rate": "7.5%",
+    "unit": "NOS",
+    "chapter": "90",
+    "source": "icegate",
+    "scrape_timestamp": "2026-03-27T02:00:00"
+  },
+  {
+    "cth_code": "84733010",
+    "description": "KEYBOARD",
+    "bcd_rate": "10%",
+    "unit": "NOS",
+    "chapter": "84",
+    "source": "icegate",
+    "scrape_timestamp": "2026-03-27T02:00:00"
+  },
+  {
+    "cth_code": "84733020",
+    "description": "MOUSE",
+    "bcd_rate": "10%",
+    "unit": "NOS",
+    "chapter": "84",
+    "source": "icegate",
+    "scrape_timestamp": "2026-03-27T02:00:00"
+  },
+  {
+    "cth_code": "85287110",
+    "description": "LCD MONITORS",
+    "bcd_rate": "10%",
+    "unit": "NOS",
+    "chapter": "85",
+    "source": "icegate",
+    "scrape_timestamp": "2026-03-27T02:00:00"
+  }
+]
