@@ -1,10 +1,23 @@
 """
-Simple script to run the CBIC customs tariff scraper and save data to files.
+Unified scraper runner for Indian Customs tariff data.
 
-This script will:
-1. Scrape ICEGATE data for specified chapters
-2. Scrape CBIC notifications
-3. Save results to JSON and CSV files in the data/scraped directory
+Supports two modes:
+1. CIP Scraper (NEW) — Playwright-based scraper for cip.icegate.gov.in
+2. Legacy CBIC Scraper — requests-based scraper for old ICEGATE/CBIC
+
+Usage:
+    # CIP Scraper (recommended)
+    python run_scraper.py cip                    # Scrape all CTH codes
+    python run_scraper.py cip --test             # Test with single code
+    python run_scraper.py cip --test 70134900    # Test specific code
+    python run_scraper.py cip --chapters 70 84   # Scrape specific chapters
+    python run_scraper.py cip --codes 84714110 85171210  # Specific codes
+    python run_scraper.py cip --visible          # Show browser window
+    python run_scraper.py cip --seed             # Only build CTH master list
+    python run_scraper.py cip --export           # Export all results to JSON/CSV
+
+    # Legacy scraper
+    python run_scraper.py legacy                 # Run old ICEGATE scraper
 """
 
 import json
@@ -16,32 +29,34 @@ from datetime import datetime
 backend_path = Path(__file__).parent / "backend"
 sys.path.insert(0, str(backend_path))
 
-from scraper.scrape_cbic import (
-    scrape_icegate_chapter,
-    scrape_cbic_notifications,
-    download_and_parse_pdf
-)
-from scraper.utils import export_to_json, export_to_csv
 
-# Create output directory
-output_dir = Path(__file__).parent / "data" / "scraped"
-output_dir.mkdir(parents=True, exist_ok=True)
+def run_cip_scraper():
+    """Run the CIP portal scraper."""
+    # Remove 'cip' from argv so argparse in scrape_cip sees the rest
+    sys.argv = [sys.argv[0]] + sys.argv[2:]
+    from scraper.cip.scrape_cip import main
+    main()
 
-def main():
-    """Main function to run the scraper."""
+
+def run_legacy_scraper():
+    """Run the legacy CBIC/ICEGATE scraper."""
+    from scraper.scrape_cbic import (
+        scrape_icegate_chapter,
+        scrape_cbic_notifications,
+    )
+    from scraper.utils import export_to_json, export_to_csv
+
+    output_dir = Path(__file__).parent / "data" / "scraped"
+    output_dir.mkdir(parents=True, exist_ok=True)
+
     print("=" * 60)
-    print("CBIC Customs Tariff Data Scraper")
+    print("Legacy CBIC Customs Tariff Data Scraper")
     print("=" * 60)
-    print()
 
-    # Test with a few chapters first (chapters 1-5)
-    print("Step 1: Scraping ICEGATE data for chapters 1-5...")
-    print("-" * 60)
-
+    # Test with chapters 1-5
+    print("\nStep 1: Scraping ICEGATE data for chapters 1-5...")
     all_icegate_entries = []
-    test_chapters = [1, 2, 3, 4, 5]
-
-    for chapter in test_chapters:
+    for chapter in [1, 2, 3, 4, 5]:
         print(f"\nScraping chapter {chapter:02d}...")
         try:
             entries = scrape_icegate_chapter(chapter)
@@ -53,65 +68,53 @@ def main():
         except Exception as e:
             print(f"  [ERROR] Error scraping chapter {chapter:02d}: {e}")
 
-    print(f"\n[OK] Total ICEGATE entries collected: {len(all_icegate_entries)}")
+    print(f"\nTotal ICEGATE entries: {len(all_icegate_entries)}")
 
-    # Save ICEGATE data
     if all_icegate_entries:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        export_to_json(all_icegate_entries, output_dir / f"icegate_data_{ts}.json")
+        export_to_csv(all_icegate_entries, output_dir / f"icegate_data_{ts}.csv")
 
-        # Save to JSON
-        json_file = output_dir / f"icegate_data_{timestamp}.json"
-        print(f"\nSaving ICEGATE data to: {json_file}")
-        export_to_json(all_icegate_entries, json_file)
-        print(f"  [OK] Saved {len(all_icegate_entries)} entries to JSON")
-
-        # Save to CSV
-        csv_file = output_dir / f"icegate_data_{timestamp}.csv"
-        print(f"Saving ICEGATE data to: {csv_file}")
-        export_to_csv(all_icegate_entries, csv_file)
-        print(f"  [OK] Saved {len(all_icegate_entries)} entries to CSV")
-
-    print("\n" + "=" * 60)
-    print("Step 2: Scraping CBIC notifications (last 90 days)...")
-    print("-" * 60)
-
+    print("\nStep 2: Scraping CBIC notifications (last 90 days)...")
     try:
         notifications = scrape_cbic_notifications(days_back=90)
-        print(f"\n[OK] Found {len(notifications)} notifications")
-
-        # Save notifications data
+        print(f"Found {len(notifications)} notifications")
         if notifications:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-
-            # Save to JSON
-            json_file = output_dir / f"cbic_notifications_{timestamp}.json"
-            print(f"\nSaving notifications to: {json_file}")
-            export_to_json(notifications, json_file)
-            print(f"  [OK] Saved {len(notifications)} notifications to JSON")
-
-            # Save to CSV
-            csv_file = output_dir / f"cbic_notifications_{timestamp}.csv"
-            print(f"Saving notifications to: {csv_file}")
-            export_to_csv(notifications, csv_file)
-            print(f"  [OK] Saved {len(notifications)} notifications to CSV")
-
-            # Display sample notifications
-            print("\nSample notifications:")
-            for notif in notifications[:3]:
-                print(f"  - {notif.get('notification_number', 'N/A')}: {notif.get('title', 'N/A')[:60]}...")
-
+            ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+            export_to_json(notifications, output_dir / f"cbic_notifications_{ts}.json")
+            export_to_csv(notifications, output_dir / f"cbic_notifications_{ts}.csv")
     except Exception as e:
-        print(f"  [ERROR] Error scraping notifications: {e}")
+        print(f"  [ERROR] {e}")
 
-    print("\n" + "=" * 60)
-    print("Scraping Complete!")
-    print("=" * 60)
     print(f"\nData saved to: {output_dir}")
-    print("\nNext steps:")
-    print("1. Review the scraped data in the data/scraped directory")
-    print("2. To scrape all chapters (1-99), modify test_chapters in this script")
-    print("3. To process notification PDFs, use the download_and_parse_pdf function")
-    print()
+
+
+def show_usage():
+    print(__doc__)
+    print("Quick start:")
+    print("  python run_scraper.py cip --seed     # Build CTH code list first")
+    print("  python run_scraper.py cip --test     # Test single code")
+    print("  python run_scraper.py cip            # Full scrape")
+
+
+def main():
+    if len(sys.argv) < 2:
+        show_usage()
+        sys.exit(0)
+
+    mode = sys.argv[1].lower()
+
+    if mode == "cip":
+        run_cip_scraper()
+    elif mode == "legacy":
+        run_legacy_scraper()
+    elif mode in ("-h", "--help", "help"):
+        show_usage()
+    else:
+        print(f"Unknown mode: {mode}")
+        show_usage()
+        sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
